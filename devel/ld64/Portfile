@@ -69,7 +69,7 @@ if {${os.arch} == "powerpc" || ${os.major} < 9} {
                         sha256  02bd46af0809eaa415d096d7d41c3e8e7d80f7d8d181840866fb87f036b4e089
     supported_archs     x86_64 i386 ppc
 
-    patchfiles-append   ld64-97.17-no-LTO.patch
+    patchfiles-append   ld64-97-no-LTO.patch ld64-97-Makefile.patch
 } elseif {${os.major} < 11} {
     # XCode 3.2.6
     # This was the last XCode release that supported linking ppc executables.
@@ -79,7 +79,7 @@ if {${os.arch} == "powerpc" || ${os.major} < 9} {
                         sha256  97b75547b2bd761306ab3e15ae297f01e7ab9760b922bc657f4ef72e4e052142
     supported_archs     i386 x86_64
 
-    patchfiles-append   ld64-127-any-cctools.patch
+    patchfiles-append   ld64-127-any-cctools.patch ld64-127-Makefile.patch
 }
 
 platform darwin 8 {

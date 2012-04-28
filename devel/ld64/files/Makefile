@@ -3,7 +3,7 @@ LLVM_CPPFLAGS := -I$(shell $(LLVM_CONFIG) --includedir) -DLTO_SUPPORT
 LLVM_LDFLAGS := -L$(shell $(LLVM_CONFIG) --libdir) -lLTO
 endif
 
-CPPFLAGS = $(LLVM_CPPFLAGS) -Isrc/abstraction -Isrc/ld $(OTHER_CPPFLAGS)
+CPPFLAGS = $(LLVM_CPPFLAGS) -Isrc/abstraction -Isrc/ld -Isrc/ld/parsers $(OTHER_CPPFLAGS)
 CFLAGS = -Os $(OTHER_CFLAGS)
 CXXFLAGS = -Os $(OTHER_CXXFLAGS)
 LDFLAGS = $(OTHER_LDFLAGS)
@@ -25,13 +25,38 @@ src/ld/Options.o : src/ld/configure.h
 src/ld/configure.h :
 	touch $@
 
-ObjectDump : src/other/ObjectDump.o src/ld/debugline.o
+ObjectDump : src/ld/debugline.o
+ObjectDump : src/ld/parsers/macho_relocatable_file.o 
+ObjectDump : src/ld/parsers/lto_file.o
+ObjectDump : src/other/ObjectDump.o 
 	$(CXX) $(LLVM_LDFLAGS) $(LDFLAGS) $^ -o $@
 
 dyldinfo : src/other/dyldinfo.o
 	$(CXX) $(LDFLAGS) -Wl,-exported_symbol,__mh_execute_header $^ -o $@
 
-ld : src/ld/ld.o src/ld/Options.o src/ld/debugline.o
+ld : src/ld/debugline.o
+ld : src/ld/ld.o
+ld : src/ld/InputFiles.o
+ld : src/ld/Options.o
+ld : src/ld/OutputFile.o
+ld : src/ld/Resolver.o
+ld : src/ld/SymbolTable.o
+ld : src/ld/parsers/archive_file.o
+ld : src/ld/parsers/lto_file.o
+ld : src/ld/parsers/macho_dylib_file.o
+ld : src/ld/parsers/macho_relocatable_file.o
+ld : src/ld/parsers/opaque_section_file.o
+ld : src/ld/passes/branch_island.o
+ld : src/ld/passes/branch_shim.o
+ld : src/ld/passes/compact_unwind.o
+ld : src/ld/passes/dtrace_dof.o
+ld : src/ld/passes/dylibs.o
+ld : src/ld/passes/got.o
+ld : src/ld/passes/huge.o
+ld : src/ld/passes/objc.o
+ld : src/ld/passes/order.o
+ld : src/ld/passes/tlvp.o
+ld : src/ld/passes/stubs/stubs.o
 	$(CXX) $(LLVM_LDFLAGS) $(LDFLAGS) $(OTHER_LDFLAGS_LD64) -Wl,-exported_symbol,__mh_execute_header $^ -o $@
 
 machocheck : src/other/machochecker.o
