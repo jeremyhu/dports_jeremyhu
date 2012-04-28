@@ -62,19 +62,15 @@ variant llvm31 conflicts llvm29 llvm30 description {Use llvm-3.1 for libLTO} {
 }
 
 if {${os.arch} == "powerpc" || ${os.major} < 9} {
-    # XCode 3.1.4
-    # 97.17 could work, but it requires gcc-4.2 to build, and xcodebuild
-    # isn't UsingTheRightCompiler.  We could use it for Leopard/ppc, but
-    # I don't want to support too many different versions.
-    version             85.2.1
-    revision            6
-    checksums           rmd160 42c80bd4ad6e9f96a757245e6a2b95084c009ff1 \
-                        sha256 4bcbcbdfd62efdc46c51700b8f5dae2cbd1638e9e50f649d5c7f242d32fca804
-    supported_archs     i386 ppc
+    # 127.2 should work for powerpc, but it will require some build fixes.
+    version             97.17
+    revision            0
+    checksums           rmd160  d52df7d7f741c8bedd29cbac73dbb9db992b4795 \
+                        sha256  02bd46af0809eaa415d096d7d41c3e8e7d80f7d8d181840866fb87f036b4e089
+    supported_archs     x86_64 i386 ppc
 
-    patchfiles-delete   ld64-pbxproj.patch ld64-version.patch
-    patchfiles-append   patch-MATH85-ld.cpp.diff ld64-85-pbxproj.patch \
-                        ld64-85-version.patch ld64-85-no_pie.patch
+    patchfiles-delete   ld64-pbxproj.patch
+    patchfiles-append   ld64-97.17-no-LTO.patch ld64-97.17-pbxproj.patch
 } elseif {${os.major} < 11} {
     # XCode 3.2.6
     # This was the last XCode release that supported linking ppc executables.
@@ -95,6 +91,15 @@ platform darwin 8 {
                 return -code error "You must first install ld64 without llvm support to build llvm.  After llvm is installed, you can reinstall ld64 with the llvm variant."
             }
         }
+    }
+}
+
+if {${configure.compiler} == "gcc-4.0"} {
+    configure.compiler gcc-4.2
+    if {![file exists ${configure.cc}]} {
+        depends_build-append port:apple-gcc42
+        depends_skip_archcheck-append apple-gcc42
+        configure.compiler apple-gcc-4.2
     }
 }
 
@@ -137,16 +142,11 @@ post-patch {
         ${worksrcpath}/ld64.xcodeproj/project.pbxproj
     reinplace "s|\$(RC_ProjectSourceVersion)|${version}|g" \
         ${worksrcpath}/ld64.xcodeproj/project.pbxproj
+
     reinplace "/VERSIONING_SYSTEM/d" \
         ${worksrcpath}/ld64.xcodeproj/project.pbxproj
-
-    if {[file exists ${worksrcpath}/src/ld/Options.cpp]} {
-        reinplace "s|@@VERSION@@|${version}|g" \
-            ${worksrcpath}/src/ld/Options.cpp
-    } else {
-        reinplace "s|@@VERSION@@|${version}|g" \
-            ${worksrcpath}/src/Options.cpp
-    }
+    reinplace "s|@@VERSION@@|${version}|g" \
+        ${worksrcpath}/src/ld/Options.cpp
 
     if {${os.major} < 9} {
         reinplace "s:-lazy_library,::g" \
@@ -154,9 +154,10 @@ post-patch {
 
         # No CommonCrypto, use openssl
         reinplace "s:<CommonCrypto/CommonDigest.h>:<openssl/md5.h>:" \
-            ${worksrcpath}/src/MachOWriterExecutable.hpp
+            ${worksrcpath}/src/ld/MachOWriterExecutable.hpp
         reinplace "s:CC_MD5:MD5:" \
-            ${worksrcpath}/src/MachOWriterExecutable.hpp
+            ${worksrcpath}/src/ld/MachOWriterExecutable.hpp
+
         reinplace "s:MACPORTS_LD64_LDFLAGS:-lcrypto:g" \
             ${worksrcpath}/ld64.xcodeproj/project.pbxproj
     } else {
