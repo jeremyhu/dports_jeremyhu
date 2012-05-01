@@ -1,0 +1,57 @@
+# $Id: Portfile 92461 2012-04-29 06:10:23Z jeremyhu@macports.org $
+
+PortSystem              1.0
+PortGroup select        1.0
+
+name                    libcxx
+categories              lang
+platforms               darwin
+license                 MIT UUIC
+maintainers             jeremyhu openmaintainer
+description             libc++ is a new implementation of the C++ standard library, targeting C++0X
+long_description        ${description}
+
+homepage                http://libcxx.llvm.org/
+
+fetch.type              svn
+svn.revision            155927
+version                 ${svn.revision}
+worksrcdir              trunk
+svn.url                 http://llvm.org/svn/llvm-project/libcxx/trunk
+
+depends_lib \
+    port:libcxxabi
+
+variant universal {}
+
+post-patch {
+    reinplace "s|/usr/lib|${prefix}/lib|g" \
+        ${worksrcpath}/lib/buildit \
+        ${worksrcpath}/Makefile
+
+    reinplace "/buildit/d" \
+        ${worksrcpath}/Makefile
+}
+
+use_configure no
+
+build.dir ${worksrcpath}/lib
+build.cmd ./buildit
+build.env-append \
+    CC="${configure.cc}" \
+    CXX="${configure.cxx}" \
+    RC_XBS=1 \
+    RC_CFLAGS="[get_canonical_archflags]" \
+    TRIPLE="-apple-darwin${os.major}"
+
+destroot.dir ${worksrcpath}
+destroot.cmd make
+destroot.target installheaders
+destroot.args \
+    HEADER_DIR="${destroot}${prefix}/include"
+
+post-destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/lib
+    xinstall -m 755 ${worksrcpath}/lib/libc++.1.dylib ${destroot}${prefix}/lib
+    ln -s libc++.1.dylib ${destroot}${prefix}/lib/libc++.dylib
+}
