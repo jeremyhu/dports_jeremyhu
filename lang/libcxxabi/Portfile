@@ -19,6 +19,19 @@ version                 ${svn.revision}
 worksrcdir              trunk
 svn.url                 http://llvm.org/svn/llvm-project/libcxxabi/trunk
 
+depends_lib \
+    port:libcxx-headers
+
+if {[string match "*gcc*" ${configure.compiler}]} {
+    configure.compiler clang
+    if {![file exists ${configure.cc}]} {
+        depends_build-append port:clang-3.0
+        depends_skip_archcheck-append clang-3.0
+
+        configure.compiler macports-clang-3.0
+    }
+}
+
 variant universal {}
 
 post-patch {
@@ -31,8 +44,8 @@ use_configure no
 build.dir ${worksrcpath}/lib
 build.cmd ./buildit
 build.env-append \
-    CC="${configure.cc}" \
-    CXX="${configure.cxx}" \
+    CC="${configure.cc} ${configure.cppflags}" \
+    CXX="${configure.cxx} ${configure.cppflags}" \
     RC_XBS=1 \
     RC_CFLAGS="[get_canonical_archflags]" \
     TRIPLE="-apple-darwin${os.major}"

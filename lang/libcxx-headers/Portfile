@@ -1,0 +1,28 @@
+# $Id: Portfile 92461 2012-04-29 06:10:23Z jeremyhu@macports.org $
+
+PortSystem              1.0
+PortGroup select        1.0
+
+name                    libcxx-headers
+categories              lang
+platforms               darwin
+license                 MIT UUIC
+maintainers             jeremyhu openmaintainer
+supported_archs         noarch
+description             libc++ is a new implementation of the C++ standard library, targeting C++0X
+long_description        ${description}
+
+homepage                http://libcxx.llvm.org/
+
+fetch.type              svn
+svn.revision            155927
+version                 ${svn.revision}
+worksrcdir              trunk
+svn.url                 http://llvm.org/svn/llvm-project/libcxx/trunk
+
+use_configure no
+build {}
+
+destroot.target installheaders
+destroot.args \
+    HEADER_DIR="${destroot}${prefix}/include"
