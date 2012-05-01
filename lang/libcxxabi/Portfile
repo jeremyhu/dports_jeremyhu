@@ -1,0 +1,47 @@
+# $Id: Portfile 92461 2012-04-29 06:10:23Z jeremyhu@macports.org $
+
+PortSystem              1.0
+PortGroup select        1.0
+
+name                    libcxxabi
+categories              lang
+platforms               darwin
+license                 MIT UIUC
+maintainers             jeremyhu openmaintainer
+description             libc++abi is a new implementation of low level support for a standard C++ library
+long_description        ${description}
+
+homepage                http://libcxxabi.llvm.org/
+
+fetch.type              svn
+svn.revision            155927
+version                 ${svn.revision}
+worksrcdir              trunk
+svn.url                 http://llvm.org/svn/llvm-project/libcxxabi/trunk
+
+variant universal {}
+
+post-patch {
+    reinplace "s|/usr/lib|${prefix}/lib|g" \
+        ${worksrcpath}/lib/buildit
+}
+
+use_configure no
+
+build.dir ${worksrcpath}/lib
+build.cmd ./buildit
+build.env-append \
+    CC="${configure.cc}" \
+    CXX="${configure.cxx}" \
+    RC_XBS=1 \
+    RC_CFLAGS="[get_canonical_archflags]" \
+    TRIPLE="-apple-darwin${os.major}"
+
+destroot {
+    xinstall -m 755 -d ${destroot}${prefix}/lib
+    xinstall -m 755 ${worksrcpath}/lib/libc++abi.dylib ${destroot}${prefix}/lib
+
+    xinstall -m 755 -d ${destroot}${prefix}/include
+    xinstall -m 644 ${worksrcpath}/include/cxa_demangle.h ${destroot}${prefix}/include
+    xinstall -m 644 ${worksrcpath}/include/cxxabi.h ${destroot}${prefix}/include
+}
