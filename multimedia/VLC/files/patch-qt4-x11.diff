@@ -1,11 +1,11 @@
---- configure.ac.orig	2009-04-13 18:24:35.000000000 -0700
-+++ configure.ac	2009-04-13 18:25:36.000000000 -0700
-@@ -4965,7 +4965,7 @@ AS_IF([test "${enable_qt4}" != "no"], [
-     VLC_ADD_PLUGIN([qt4])
-     AC_DEFINE([HAVE_QT4], 1, [Define to 1 if you have QT4 library.])
+--- configure.ac.orig	2011-02-04 15:59:01.000000000 -0500
++++ configure.ac	2011-02-04 15:59:01.000000000 -0500
+@@ -3995,7 +3993,7 @@
      ALIASES="${ALIASES} qvlc"
--    AS_IF([test "${SYS}" != "mingw32" -a "${SYS}" != "mingwce" -a "${SYS}" != "cygwin" -a "${SYS}" != "darwin"], [
-+    AS_IF([test "${SYS}" != "mingw32" -a "${SYS}" != "mingwce" -a "${SYS}" != "cygwin"], [
-         VLC_ADD_LIBS([qt4],[$QT4_LIBS -lX11])
-     ], [
-         VLC_ADD_LIBS([qt4],[$QT4_LIBS -lqjpeg])
+     QT4LOCALEDIR="$(eval $PKG_CONFIG --variable=prefix QtCore)/share/qt4/translations/"
+     AC_SUBST(QT4LOCALEDIR)
+-    AS_IF([test "${SYS}" != "mingw32" -a "${SYS}" != "mingwce" -a "${SYS}" != "darwin"], [
++    AS_IF([test "${SYS}" != "mingw32" -a "${SYS}" != "mingwce"], [
+         VLC_ADD_LIBS([qt4],[$QT4_LIBS ${X_LIBS} ${X_PRE_LIBS} -lX11])
+         need_xid_provider="no"
+         VLC_ADD_CXXFLAGS([qt4],[$QT4_CFLAGS ${X_CFLAGS} -DQT4LOCALEDIR=\\\\\\\"${QT4LOCALEDIR}\\\\\\\"])

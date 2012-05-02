@@ -5,8 +5,7 @@
 PortSystem          1.0
 
 name                VLC
-version             1.0.6
-revision            9
+version             1.1.7
 
 categories          multimedia
 
@@ -27,9 +26,9 @@ master_sites        http://download.videolan.org/pub/videolan/vlc/${version}/
 distname            vlc-${version}
 use_bzip2           yes
 
-checksums           md5     246a3865ec037f8f5757ef6b973a80fc \
-                    sha1    834346a84a71d915440b7741e04b6e02de451786 \
-                    rmd160  2185eb418748f2aadfce5e61b7a9de66a62ef2d1
+checksums           md5     932ce1fa4afa54b56ac0ccc0655667b6 \
+                    sha1    6bd559fe2bba51c5ed1ae71d18dc8ac611e72a04 \
+                    rmd160  1662f458c5e1cec41e27fa1320af817551577def
 
 depends_lib     port:lame port:a52dec port:libogg port:flac \
                 port:libdca port:libcddb port:libcdio port:libmad \
@@ -46,7 +45,17 @@ pre-fetch {
     }
 }
 
-patchfiles      patch-Makefile.am.diff patch-configure.ac-xcb.diff patch-png.c.diff patch-configure.ac-no_qtcapture.diff patch-configure.ac-macosx_audio.diff patch-noKaxTagMulti.diff patch-yadif.diff patch-compat.diff
+patchfiles \
+    patch-Makefile.am.diff \
+    patch-matroska.diff \
+    patch-modules.c.diff \
+    patch-no-sparkle.diff \
+    patch-compat.diff \
+    patch-yadif.diff 
+
+#patch-configure.ac-no_qtcapture.diff \
+#patch-configure.ac-macosx_audio.diff \
+
 
 post-patch {
     reinplace "s:librsvg-2/librsvg:librsvg:" ${worksrcpath}/modules/misc/svg.c
@@ -71,14 +80,14 @@ livecheck.regex <a href=\"(\\d\[\\d|\.|\\w\]+).*/\">
 universal_variant   no
 
 configure.args-append   --disable-macosx-defaults \
-    --enable-release --enable-macosx --disable-macosx-audio --enable-a52 --enable-cddax \
+    --enable-macosx --disable-macosx-audio --enable-a52 \
     --enable-dvdnav --enable-dvdread --enable-faad --enable-flac --enable-live555 \
     --enable-vorbis --enable-ogg --enable-mad --disable-libass --enable-asademux \
     --enable-dca --enable-gnutls --enable-ncurses --enable-png --enable-realrtsp \
     --with-live555-tree=${prefix}/lib/live \
     --disable-jack --disable-portaudio \
-    --disable-debug --disable-x11 --disable-xvideo --disable-glx --disable-xinerama \
-    --disable-xcb --disable-xvmc --disable-qt4 --disable-quicktime \
+    --disable-debug --disable-xvideo --disable-glx \
+    --disable-xcb --disable-qt4 --disable-quicktime \
     --disable-skins2 --disable-notify --disable-telepathy --disable-twolame \
     --disable-speex --disable-theora --disable-x264 --disable-dvbpsi \
     --disable-vcdx  --disable-fontconfig --disable-freetype \
@@ -219,9 +228,8 @@ variant x11 {
     port:xorg-xcb-util \
     port:xorg-xcb-util-keysyms
 
-    configure.args-delete   --disable-x11 --disable-xvideo --disable-glx --disable-xinerama --disable-xcb
-    configure.args-append   --enable-x11 --enable-xvideo --enable-glx --enable-xinerama --enable-xcb
-    patchfiles-delete       patch-configure.ac-xcb.diff
+    configure.args-delete   --disable-xvideo --disable-glx --disable-xcb
+    configure.args-append   --enable-xvideo --enable-glx --enable-xcb
 }
 
 variant qt4 description {Build using QT4 UI.  This will use qt4-x11 if +x11 and qt4-mac otherwise.} {

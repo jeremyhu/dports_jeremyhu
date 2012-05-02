@@ -1,0 +1,352 @@
+--- Makefile.am.orig	2011-02-04 15:59:01.000000000 -0500
++++ Makefile.am	2011-02-04 15:59:01.000000000 -0500
+@@ -447,8 +447,6 @@
+ 	for i in AUTHORS COPYING THANKS; do \
+ 	  cp "$(srcdir)/$$i" $(top_builddir)/tmp; \
+ 	done
+-	mkdir -p $(top_builddir)/tmp/extras/contrib/Sparkle
+-	cp -R $(CONTRIB_DIR)/Sparkle/Sparkle.framework $(top_builddir)/tmp/extras/contrib/Sparkle
+ 	mkdir -p $(top_builddir)/tmp/modules/audio_output
+ 	mkdir -p $(top_builddir)/tmp/modules/gui/macosx
+ 	for i in \
+@@ -600,8 +598,6 @@
+ 	for i in AUTHORS COPYING THANKS; do \
+ 	  cp "$(srcdir)/$$i" $(top_builddir)/tmp; \
+ 	done
+-	mkdir -p $(top_builddir)/tmp/extras/contrib/Sparkle
+-	cp -R $(CONTRIB_DIR)/Sparkle/Sparkle.framework $(top_builddir)/tmp/extras/contrib/Sparkle
+ 	mkdir -p $(top_builddir)/tmp/modules/audio_output
+ 	mkdir -p $(top_builddir)/tmp/modules/gui/macosx
+ 	for i in \
+--- configure.ac.orig	2011-02-04 15:59:01.000000000 -0500
++++ configure.ac	2011-02-04 15:59:01.000000000 -0500
+@@ -4037,8 +4035,6 @@
+   VLC_ADD_LDFLAGS([macosx minimal_macosx],            [-Wl,-framework,CoreServices])
+   VLC_ADD_LDFLAGS([macosx minimal_macosx],            [-Wl,-framework,AGL])
+   VLC_ADD_LDFLAGS([macosx],                           [-Wl,-framework,IOKit])
+-  VLC_ADD_LDFLAGS([macosx],                           [-F${CONTRIB_DIR}/Sparkle -Wl,-framework,Sparkle])
+-  VLC_ADD_OBJCFLAGS([macosx],                         [-F${CONTRIB_DIR}/Sparkle])
+   dnl For bug report
+   VLC_ADD_LDFLAGS([macosx],                           [-Wl,-framework,AddressBook])
+   VLC_ADD_LDFLAGS([macosx],                           [-Wl,-framework,WebKit])
+--- extras/package/macosx/vlc.xcodeproj/project.pbxproj.orig	2011-02-04 15:59:01.000000000 -0500
++++ extras/package/macosx/vlc.xcodeproj/project.pbxproj	2011-02-04 15:59:01.000000000 -0500
+@@ -133,8 +133,6 @@
+ 		CC402F420E00ABBB006A4BA4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC3DC89B0A7CDB9600B53F32 /* ApplicationServices.framework */; };
+ 		CC402F430E00ABBB006A4BA4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1941240B9C1F8400635F6B /* QTKit.framework */; };
+ 		CC402F440E00ABBB006A4BA4 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC962E2C0CC7992800A56695 /* WebKit.framework */; };
+-		CC426FD11020D44F00A32659 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC426FD01020D44F00A32659 /* Sparkle.framework */; };
+-		CC426FD71020D47100A32659 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = CC426FD01020D44F00A32659 /* Sparkle.framework */; };
+ 		CC62B8D00FC5787D0077BB8C /* aiff.icns in Resources */ = {isa = PBXBuildFile; fileRef = CC62B8C50FC5787D0077BB8C /* aiff.icns */; };
+ 		CC62B8D10FC5787D0077BB8C /* audio.icns in Resources */ = {isa = PBXBuildFile; fileRef = CC62B8C60FC5787D0077BB8C /* audio.icns */; };
+ 		CC62B8D20FC5787D0077BB8C /* flv.icns in Resources */ = {isa = PBXBuildFile; fileRef = CC62B8C70FC5787D0077BB8C /* flv.icns */; };
+@@ -173,20 +171,6 @@
+ 		CCF11B540F8BFB520088542D /* ErrorPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = CCF11B520F8BFB520088542D /* ErrorPanel.nib */; };
+ /* End PBXBuildFile section */
+ 
+-/* Begin PBXCopyFilesBuildPhase section */
+-		CC426FD81020D48700A32659 /* Copy Frameworks */ = {
+-			isa = PBXCopyFilesBuildPhase;
+-			buildActionMask = 2147483647;
+-			dstPath = "";
+-			dstSubfolderSpec = 10;
+-			files = (
+-				CC426FD71020D47100A32659 /* Sparkle.framework in Copy Frameworks */,
+-			);
+-			name = "Copy Frameworks";
+-			runOnlyForDeploymentPostprocessing = 0;
+-		};
+-/* End PBXCopyFilesBuildPhase section */
+-
+ /* Begin PBXFileReference section */
+ 		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+ 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+@@ -296,7 +280,6 @@
+ 		CC33C2500D2578F5008C4683 /* fullscreen_graphite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = fullscreen_graphite.png; path = Resources/fullscreen_graphite.png; sourceTree = "<group>"; };
+ 		CC3DC89B0A7CDB9600B53F32 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+ 		CC402F4B0E00ABBB006A4BA4 /* VLC.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VLC.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+-		CC426FD01020D44F00A32659 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = ../../contrib/Sparkle/Sparkle.framework; sourceTree = SOURCE_ROOT; };
+ 		CC4A33210F8CB017000FC4A7 /* coredialogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = coredialogs.m; path = ../../../modules/gui/macosx/coredialogs.m; sourceTree = SOURCE_ROOT; };
+ 		CC4A33220F8CB017000FC4A7 /* coredialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = coredialogs.h; path = ../../../modules/gui/macosx/coredialogs.h; sourceTree = SOURCE_ROOT; };
+ 		CC4ED9AC0ABE07C800CA4CC5 /* add_embedded_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_embedded_blue.png; path = Resources/add_embedded_blue.png; sourceTree = "<group>"; };
+@@ -438,7 +421,6 @@
+ 				CC402F430E00ABBB006A4BA4 /* QTKit.framework in Frameworks */,
+ 				CC402F440E00ABBB006A4BA4 /* WebKit.framework in Frameworks */,
+ 				CCBE999F0F922C51000705F8 /* CoreServices.framework in Frameworks */,
+-				CC426FD11020D44F00A32659 /* Sparkle.framework in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -547,7 +529,6 @@
+ 		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
+ 			isa = PBXGroup;
+ 			children = (
+-				CC426FD01020D44F00A32659 /* Sparkle.framework */,
+ 				CCBE999E0F922C51000705F8 /* CoreServices.framework */,
+ 				CC962E2C0CC7992800A56695 /* WebKit.framework */,
+ 				CC1941240B9C1F8400635F6B /* QTKit.framework */,
+@@ -852,7 +833,6 @@
+ 				CC402EAF0E00ABBB006A4BA4 /* Resources */,
+ 				CC402F400E00ABBB006A4BA4 /* Frameworks */,
+ 				CC402F450E00ABBB006A4BA4 /* Rez */,
+-				CC426FD81020D48700A32659 /* Copy Frameworks */,
+ 			);
+ 			buildRules = (
+ 			);
+@@ -1177,9 +1157,7 @@
+ 				COPY_PHASE_STRIP = NO;
+ 				FRAMEWORK_SEARCH_PATHS = (
+ 					"$(inherited)",
+-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+ 				);
+-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../contrib/Sparkle\"";
+ 				GCC_DYNAMIC_NO_PIC = NO;
+ 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+ 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+@@ -1211,9 +1189,7 @@
+ 				COPY_PHASE_STRIP = YES;
+ 				FRAMEWORK_SEARCH_PATHS = (
+ 					"$(inherited)",
+-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+ 				);
+-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../contrib/Sparkle\"";
+ 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+ 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+ 				HEADER_SEARCH_PATHS = "";
+@@ -1241,9 +1217,7 @@
+ 			buildSettings = {
+ 				FRAMEWORK_SEARCH_PATHS = (
+ 					"$(inherited)",
+-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+ 				);
+-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../contrib/Sparkle\"";
+ 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+ 				HEADER_SEARCH_PATHS = "";
+ 				INFOPLIST_FILE = Info.plist;
+--- modules/gui/macosx/intf.m.orig	2011-02-04 15:59:01.000000000 -0500
++++ modules/gui/macosx/intf.m	2011-02-04 15:59:01.000000000 -0500
+@@ -56,7 +56,6 @@
+ 
+ #import <AddressBook/AddressBook.h>         /* for crashlog send mechanism */
+ #import <IOKit/hidsystem/ev_keymap.h>         /* for the media key support */
+-#import <Sparkle/Sparkle.h>                 /* we're the update delegate */
+ 
+ /*****************************************************************************
+  * Local prototypes.
+@@ -900,19 +899,6 @@
+ }
+ 
+ #pragma mark -
+-#pragma mark Sparkle delegate
+-/* received directly before the update gets installed, so let's shut down a bit */
+-- (void)updater:(SUUpdater *)updater willInstallUpdate:(SUAppcastItem *)update
+-{
+-    [o_remote stopListening: self];
+-    var_SetInteger( p_intf->p_libvlc, "key-action", ACTIONID_STOP );
+-
+-    /* Close the window directly, because we do know that there
+-     * won't be anymore video. It's currently waiting a bit. */
+-    [[[o_controls voutView] window] orderOut:self];
+-}
+-
+-#pragma mark -
+ #pragma mark Toolbar delegate
+ 
+ /* Our item identifiers */
+--- modules/gui/macosx/simple_prefs.m.orig	2011-02-04 15:59:01.000000000 -0500
++++ modules/gui/macosx/simple_prefs.m	2011-02-04 15:59:01.000000000 -0500
+@@ -29,7 +29,6 @@
+ #import "misc.h"
+ #import "intf.h"
+ #import "AppleRemote.h"
+-#import <Sparkle/Sparkle.h>                        //for o_intf_last_update_lbl
+ 
+ static NSString* VLCSPrefsToolbarIdentifier = @"Our Simple Preferences Toolbar Identifier";
+ static NSString* VLCIntfSettingToolbarIdentifier = @"Intf Settings Item Identifier";
+@@ -462,10 +461,6 @@
+ 	[self setupButton: o_intf_mediakeys_ckb forBoolValue: "macosx-mediakeys"];
+     [self setupButton: o_intf_mediakeys_bg_ckb forBoolValue: "macosx-mediakeys-background"];
+     [o_intf_mediakeys_bg_ckb setEnabled: [o_intf_mediakeys_ckb state]];
+-    if( [[SUUpdater sharedUpdater] lastUpdateCheckDate] != NULL )
+-        [o_intf_last_update_lbl setStringValue: [NSString stringWithFormat: _NS("Last check on: %@"), [[[SUUpdater sharedUpdater] lastUpdateCheckDate] descriptionWithLocale: [[NSUserDefaults standardUserDefaults] dictionaryRepresentation]]]];
+-    else
+-        [o_intf_last_update_lbl setStringValue: _NS("No check was performed yet.")];
+ 
+     /******************
+      * audio settings *
+--- Makefile.am.orig	2011-02-04 15:59:01.000000000 -0500
++++ Makefile.am	2011-02-04 15:59:01.000000000 -0500
+@@ -447,8 +447,6 @@
+ 	for i in AUTHORS COPYING THANKS; do \
+ 	  cp "$(srcdir)/$$i" $(top_builddir)/tmp; \
+ 	done
+-	mkdir -p $(top_builddir)/tmp/extras/contrib/Sparkle
+-	cp -R $(CONTRIB_DIR)/Sparkle/Sparkle.framework $(top_builddir)/tmp/extras/contrib/Sparkle
+ 	mkdir -p $(top_builddir)/tmp/modules/audio_output
+ 	mkdir -p $(top_builddir)/tmp/modules/gui/macosx
+ 	for i in \
+@@ -600,8 +598,6 @@
+ 	for i in AUTHORS COPYING THANKS; do \
+ 	  cp "$(srcdir)/$$i" $(top_builddir)/tmp; \
+ 	done
+-	mkdir -p $(top_builddir)/tmp/extras/contrib/Sparkle
+-	cp -R $(CONTRIB_DIR)/Sparkle/Sparkle.framework $(top_builddir)/tmp/extras/contrib/Sparkle
+ 	mkdir -p $(top_builddir)/tmp/modules/audio_output
+ 	mkdir -p $(top_builddir)/tmp/modules/gui/macosx
+ 	for i in \
+--- configure.ac.orig	2011-02-04 15:59:01.000000000 -0500
++++ configure.ac	2011-02-04 15:59:01.000000000 -0500
+@@ -4037,8 +4035,6 @@
+   VLC_ADD_LDFLAGS([macosx minimal_macosx],            [-Wl,-framework,CoreServices])
+   VLC_ADD_LDFLAGS([macosx minimal_macosx],            [-Wl,-framework,AGL])
+   VLC_ADD_LDFLAGS([macosx],                           [-Wl,-framework,IOKit])
+-  VLC_ADD_LDFLAGS([macosx],                           [-F${CONTRIB_DIR}/Sparkle -Wl,-framework,Sparkle])
+-  VLC_ADD_OBJCFLAGS([macosx],                         [-F${CONTRIB_DIR}/Sparkle])
+   dnl For bug report
+   VLC_ADD_LDFLAGS([macosx],                           [-Wl,-framework,AddressBook])
+   VLC_ADD_LDFLAGS([macosx],                           [-Wl,-framework,WebKit])
+--- extras/package/macosx/vlc.xcodeproj/project.pbxproj.orig	2011-02-04 15:59:01.000000000 -0500
++++ extras/package/macosx/vlc.xcodeproj/project.pbxproj	2011-02-04 15:59:01.000000000 -0500
+@@ -133,8 +133,6 @@
+ 		CC402F420E00ABBB006A4BA4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC3DC89B0A7CDB9600B53F32 /* ApplicationServices.framework */; };
+ 		CC402F430E00ABBB006A4BA4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1941240B9C1F8400635F6B /* QTKit.framework */; };
+ 		CC402F440E00ABBB006A4BA4 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC962E2C0CC7992800A56695 /* WebKit.framework */; };
+-		CC426FD11020D44F00A32659 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC426FD01020D44F00A32659 /* Sparkle.framework */; };
+-		CC426FD71020D47100A32659 /* Sparkle.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = CC426FD01020D44F00A32659 /* Sparkle.framework */; };
+ 		CC62B8D00FC5787D0077BB8C /* aiff.icns in Resources */ = {isa = PBXBuildFile; fileRef = CC62B8C50FC5787D0077BB8C /* aiff.icns */; };
+ 		CC62B8D10FC5787D0077BB8C /* audio.icns in Resources */ = {isa = PBXBuildFile; fileRef = CC62B8C60FC5787D0077BB8C /* audio.icns */; };
+ 		CC62B8D20FC5787D0077BB8C /* flv.icns in Resources */ = {isa = PBXBuildFile; fileRef = CC62B8C70FC5787D0077BB8C /* flv.icns */; };
+@@ -173,20 +171,6 @@
+ 		CCF11B540F8BFB520088542D /* ErrorPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = CCF11B520F8BFB520088542D /* ErrorPanel.nib */; };
+ /* End PBXBuildFile section */
+ 
+-/* Begin PBXCopyFilesBuildPhase section */
+-		CC426FD81020D48700A32659 /* Copy Frameworks */ = {
+-			isa = PBXCopyFilesBuildPhase;
+-			buildActionMask = 2147483647;
+-			dstPath = "";
+-			dstSubfolderSpec = 10;
+-			files = (
+-				CC426FD71020D47100A32659 /* Sparkle.framework in Copy Frameworks */,
+-			);
+-			name = "Copy Frameworks";
+-			runOnlyForDeploymentPostprocessing = 0;
+-		};
+-/* End PBXCopyFilesBuildPhase section */
+-
+ /* Begin PBXFileReference section */
+ 		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+ 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+@@ -296,7 +280,6 @@
+ 		CC33C2500D2578F5008C4683 /* fullscreen_graphite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = fullscreen_graphite.png; path = Resources/fullscreen_graphite.png; sourceTree = "<group>"; };
+ 		CC3DC89B0A7CDB9600B53F32 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+ 		CC402F4B0E00ABBB006A4BA4 /* VLC.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VLC.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+-		CC426FD01020D44F00A32659 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = ../../contrib/Sparkle/Sparkle.framework; sourceTree = SOURCE_ROOT; };
+ 		CC4A33210F8CB017000FC4A7 /* coredialogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = coredialogs.m; path = ../../../modules/gui/macosx/coredialogs.m; sourceTree = SOURCE_ROOT; };
+ 		CC4A33220F8CB017000FC4A7 /* coredialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = coredialogs.h; path = ../../../modules/gui/macosx/coredialogs.h; sourceTree = SOURCE_ROOT; };
+ 		CC4ED9AC0ABE07C800CA4CC5 /* add_embedded_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add_embedded_blue.png; path = Resources/add_embedded_blue.png; sourceTree = "<group>"; };
+@@ -438,7 +421,6 @@
+ 				CC402F430E00ABBB006A4BA4 /* QTKit.framework in Frameworks */,
+ 				CC402F440E00ABBB006A4BA4 /* WebKit.framework in Frameworks */,
+ 				CCBE999F0F922C51000705F8 /* CoreServices.framework in Frameworks */,
+-				CC426FD11020D44F00A32659 /* Sparkle.framework in Frameworks */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -547,7 +529,6 @@
+ 		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
+ 			isa = PBXGroup;
+ 			children = (
+-				CC426FD01020D44F00A32659 /* Sparkle.framework */,
+ 				CCBE999E0F922C51000705F8 /* CoreServices.framework */,
+ 				CC962E2C0CC7992800A56695 /* WebKit.framework */,
+ 				CC1941240B9C1F8400635F6B /* QTKit.framework */,
+@@ -852,7 +833,6 @@
+ 				CC402EAF0E00ABBB006A4BA4 /* Resources */,
+ 				CC402F400E00ABBB006A4BA4 /* Frameworks */,
+ 				CC402F450E00ABBB006A4BA4 /* Rez */,
+-				CC426FD81020D48700A32659 /* Copy Frameworks */,
+ 			);
+ 			buildRules = (
+ 			);
+@@ -1177,9 +1157,7 @@
+ 				COPY_PHASE_STRIP = NO;
+ 				FRAMEWORK_SEARCH_PATHS = (
+ 					"$(inherited)",
+-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+ 				);
+-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../contrib/Sparkle\"";
+ 				GCC_DYNAMIC_NO_PIC = NO;
+ 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+ 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+@@ -1211,9 +1189,7 @@
+ 				COPY_PHASE_STRIP = YES;
+ 				FRAMEWORK_SEARCH_PATHS = (
+ 					"$(inherited)",
+-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+ 				);
+-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../contrib/Sparkle\"";
+ 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+ 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+ 				HEADER_SEARCH_PATHS = "";
+@@ -1241,9 +1217,7 @@
+ 			buildSettings = {
+ 				FRAMEWORK_SEARCH_PATHS = (
+ 					"$(inherited)",
+-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+ 				);
+-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../contrib/Sparkle\"";
+ 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+ 				HEADER_SEARCH_PATHS = "";
+ 				INFOPLIST_FILE = Info.plist;
+--- modules/gui/macosx/intf.m.orig	2011-02-04 15:59:01.000000000 -0500
++++ modules/gui/macosx/intf.m	2011-02-04 15:59:01.000000000 -0500
+@@ -56,7 +56,6 @@
+ 
+ #import <AddressBook/AddressBook.h>         /* for crashlog send mechanism */
+ #import <IOKit/hidsystem/ev_keymap.h>         /* for the media key support */
+-#import <Sparkle/Sparkle.h>                 /* we're the update delegate */
+ 
+ /*****************************************************************************
+  * Local prototypes.
+@@ -900,19 +899,6 @@
+ }
+ 
+ #pragma mark -
+-#pragma mark Sparkle delegate
+-/* received directly before the update gets installed, so let's shut down a bit */
+-- (void)updater:(SUUpdater *)updater willInstallUpdate:(SUAppcastItem *)update
+-{
+-    [o_remote stopListening: self];
+-    var_SetInteger( p_intf->p_libvlc, "key-action", ACTIONID_STOP );
+-
+-    /* Close the window directly, because we do know that there
+-     * won't be anymore video. It's currently waiting a bit. */
+-    [[[o_controls voutView] window] orderOut:self];
+-}
+-
+-#pragma mark -
+ #pragma mark Toolbar delegate
+ 
+ /* Our item identifiers */
+--- modules/gui/macosx/simple_prefs.m.orig	2011-02-04 15:59:01.000000000 -0500
++++ modules/gui/macosx/simple_prefs.m	2011-02-04 15:59:01.000000000 -0500
+@@ -29,7 +29,6 @@
+ #import "misc.h"
+ #import "intf.h"
+ #import "AppleRemote.h"
+-#import <Sparkle/Sparkle.h>                        //for o_intf_last_update_lbl
+ 
+ static NSString* VLCSPrefsToolbarIdentifier = @"Our Simple Preferences Toolbar Identifier";
+ static NSString* VLCIntfSettingToolbarIdentifier = @"Intf Settings Item Identifier";
+@@ -462,10 +461,6 @@
+ 	[self setupButton: o_intf_mediakeys_ckb forBoolValue: "macosx-mediakeys"];
+     [self setupButton: o_intf_mediakeys_bg_ckb forBoolValue: "macosx-mediakeys-background"];
+     [o_intf_mediakeys_bg_ckb setEnabled: [o_intf_mediakeys_ckb state]];
+-    if( [[SUUpdater sharedUpdater] lastUpdateCheckDate] != NULL )
+-        [o_intf_last_update_lbl setStringValue: [NSString stringWithFormat: _NS("Last check on: %@"), [[[SUUpdater sharedUpdater] lastUpdateCheckDate] descriptionWithLocale: [[NSUserDefaults standardUserDefaults] dictionaryRepresentation]]]];
+-    else
+-        [o_intf_last_update_lbl setStringValue: _NS("No check was performed yet.")];
+ 
+     /******************
+      * audio settings *

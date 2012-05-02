@@ -1,34 +1,70 @@
---- Makefile.am.orig	2009-07-07 17:34:22.000000000 +0200
-+++ Makefile.am	2009-07-07 17:38:50.000000000 +0200
-@@ -411,13 +411,6 @@
+--- Makefile.am.orig	2011-02-04 15:59:01.000000000 -0500
++++ Makefile.am	2011-02-04 15:59:01.000000000 -0500
+@@ -426,13 +426,6 @@
  vlc$(EXEEXT):
- 	ln -sf bin/vlc-static$(EXEEXT) vlc$(EXEEXT)
+ 	$(AM_V_GEN)ln -sf bin/vlc-static$(EXEEXT) vlc$(EXEEXT)
  
 -if HAVE_DARWIN
--if BUILD_VLC
+-if BUILD_MACOSX_VLC_APP
 -# Create the MacOS X app
 -noinst_DATA = VLC.app
 -endif
 -endif
 -
- # VLC-release.app for packaging and giving it to your friends
- # use package-macosx to get a nice dmg
- VLC-release.app: vlc
-@@ -428,7 +421,7 @@
+ silentstd = $(silentstd_$(V))
+ silentstd_ = $(silentstd_$(AM_DEFAULT_VERBOSITY))
+ silentstd_0 = 2>&1 >/dev/null
+@@ -447,7 +440,7 @@
  	for i in vlc.xcodeproj Resources README.MacOSX.rtf ; do \
  	  cp -R $(srcdir)/extras/package/macosx/$$i $(top_builddir)/tmp/extras/package/macosx/; \
  	done
--	REVISION=`git describe --always` && \
-+	REVISION="$(VERISON_REVISION)" && \
- 	cat $(top_builddir)/extras/package/macosx/Info.plist | \
- 	sed "s/#REVISION#/$$REVISION/g" > $(top_builddir)/tmp/extras/package/macosx/Info.plist
- 	cp -R $(top_builddir)/extras/package/macosx/Resources $(top_builddir)/tmp/extras/package/macosx/
-@@ -582,7 +575,7 @@
- 	for i in vlc.xcodeproj Resources README.MacOSX.rtf; do \
- 	  cp -R $(srcdir)/extras/package/macosx/$$i $(top_builddir)/tmp/extras/package/macosx/; \
- 	done
--	REVISION=`git describe --always` && \
+-	REVISION=`(git --git-dir=$(srcdir)/.git describe --always || echo exported)` && \
 +	REVISION="$(VERSION_REVISION)" && \
  	cat $(top_builddir)/extras/package/macosx/Info.plist | \
  	sed "s/#REVISION#/$$REVISION/g" > $(top_builddir)/tmp/extras/package/macosx/Info.plist
  	cp -R $(top_builddir)/extras/package/macosx/Resources $(top_builddir)/tmp/extras/package/macosx/
+@@ -509,7 +500,7 @@
+ 	$(AM_V_GEN)cd $(top_builddir)/tmp/extras/package/macosx && \
+ 	xcodebuild -target vlc SYMROOT=../../../build DSTROOT=../../../build $(silentstd) && \
+ 	cd ../../../../ && \
+-	cp -R $(top_builddir)/tmp/build/Default/VLC.bundle $(top_builddir)/VLC-release.app; \
++	cp -r $(top_builddir)/tmp/build/Default/VLC.bundle $(top_builddir)/VLC-release.app; \
+ 	rm -Rf $(top_builddir)/tmp
+ 	$(INSTALL) -d $(top_builddir)/VLC-release.app/Contents/MacOS
+ 	PRODUCT="VLC-release.app" ACTION="release-makefile" src_dir=$(srcdir) build_dir=$(top_builddir) sh $(srcdir)/projects/macosx/framework/Pre-Compile.sh
+@@ -600,7 +591,7 @@
+ 	for i in vlc.xcodeproj Resources README.MacOSX.rtf; do \
+ 	  cp -R $(srcdir)/extras/package/macosx/$$i $(top_builddir)/tmp/extras/package/macosx/; \
+ 	done
+-	REVISION=`(git --git-dir=$(srcdir)/.git describe --always || echo exported)` && \
++	REVISION="$(VERSION_REVISION)" && \
+ 	cat $(top_builddir)/extras/package/macosx/Info.plist | \
+ 	sed "s/#REVISION#/$$REVISION/g" > $(top_builddir)/tmp/extras/package/macosx/Info.plist
+ 	cp -R $(top_builddir)/extras/package/macosx/Resources $(top_builddir)/tmp/extras/package/macosx/
+@@ -662,12 +651,12 @@
+ 	$(AM_V_GEN)cd $(top_builddir)/tmp/extras/package/macosx && \
+ 	xcodebuild install -target vlc SYMROOT=../../../build DSTROOT=../../../build $(silentstd) && \
+ 	cd ../../../../ && \
+-	cp -R $(top_builddir)/tmp/build/Default/VLC.bundle $(top_builddir)/VLC.app
++	cp -r $(top_builddir)/tmp/build/Default/VLC.bundle $(top_builddir)/VLC.app
+ 	$(INSTALL) -d $(top_builddir)/VLC.app/Contents/MacOS
+ 	touch $(top_builddir)/VLC.app/Contents/MacOS/VLC
+ 	chmod +x $(top_builddir)/VLC.app/Contents/MacOS/VLC
+ 	$(INSTALL) $(top_builddir)/bin/.libs/vlc $(top_builddir)/VLC.app/Contents/MacOS/VLC
+-	ln -sf ../../../modules $(top_builddir)/VLC.app/Contents/MacOS/plugins
++	ln -sf "$(vlclibdir)/plugins" $(top_builddir)/VLC.app/Contents/MacOS/plugins
+ 	install -d $(top_builddir)/VLC.app/Contents/MacOS/share
+ 	for i in `ls $(srcdir)/share`; do \
+ 	   ln -sf `pwd`/$(srcdir)/share/$$i $(top_builddir)/VLC.app/Contents/MacOS/share/; \
+--- src/Makefile.am.orig	2011-02-04 15:59:01.000000000 -0500
++++ src/Makefile.am	2011-02-04 15:59:01.000000000 -0500
+@@ -525,8 +525,7 @@
+ 
+ stamp-revision:
+ 	$(AM_V_at)rm -f -- revision.tmp
+-	$(AM_V_GEN)(git --git-dir="$(top_srcdir)/.git/" describe --tags --long \
+-		--match '?.*.*' --always || echo exported) > revision.tmp
++	$(AM_V_GEN)(echo "$(VERSION_REVISION)") > revision.tmp
+ 	$(AM_V_at)if diff revision.tmp revision.txt >/dev/null 2>&1; then \
+ 		rm -f -- revision.tmp; \
+ 	else \
