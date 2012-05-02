@@ -66,3 +66,53 @@ diff -Naurp vlc-2.0.1.orig/modules/gui/macosx/simple_prefs.m vlc-2.0.1/modules/g
      psz_tmp = config_GetPsz( p_intf, "control" );
      if (psz_tmp) {
          [o_intf_enableGrowl_ckb setState: (NSInteger)strstr( psz_tmp, "growl")];
+diff --git a/extras/package/macosx/Resources/English.lproj/Preferences.xib b/extras/package/macosx/Resources/English.lproj/Preferences.xib
+index 8682829..29e653a 100644
+--- extras/package/macosx/Resources/English.lproj/Preferences.xib
++++ extras/package/macosx/Resources/English.lproj/Preferences.xib
+@@ -4423,9 +4423,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
+         <string key="NSMaxSize">{1.7976931348623157e+308, 1.7976931348623157e+308}</string>
+         <bool key="NSWindowIsRestorable">YES</bool>
+       </object>
+-      <object class="NSCustomObject" id="761483302">
+-        <string key="NSClassName">SUUpdater</string>
+-      </object>
+     </object>
+     <object class="IBObjectContainer" key="IBDocument.Objects">
+       <object class="NSMutableArray" key="connectionRecords">
+@@ -5783,22 +5780,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
+           <int key="connectionID">3554</int>
+         </object>
+         <object class="IBConnectionRecord">
+-          <object class="IBBindingConnection" key="connection">
+-            <string key="label">value: automaticallyChecksForUpdates</string>
+-            <reference key="source" ref="243384014"/>
+-            <reference key="destination" ref="761483302"/>
+-            <object class="NSNibBindingConnector" key="connector">
+-              <reference key="NSSource" ref="243384014"/>
+-              <reference key="NSDestination" ref="761483302"/>
+-              <string key="NSLabel">value: automaticallyChecksForUpdates</string>
+-              <string key="NSBinding">value</string>
+-              <string key="NSKeyPath">automaticallyChecksForUpdates</string>
+-              <int key="NSNibBindingConnectorVersion">2</int>
+-            </object>
+-          </object>
+-          <int key="connectionID">3559</int>
+-        </object>
+-        <object class="IBConnectionRecord">
+           <object class="IBOutletConnection" key="connection">
+             <string key="label">o_intf_update_ckb</string>
+             <reference key="source" ref="150917409"/>
+@@ -8373,12 +8354,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
+             <reference key="parent" ref="492678965"/>
+           </object>
+           <object class="IBObjectRecord">
+-            <int key="objectID">3555</int>
+-            <reference key="object" ref="761483302"/>
+-            <reference key="parent" ref="0"/>
+-            <string key="objectName">Sparkle Updater</string>
+-          </object>
+-          <object class="IBObjectRecord">
+             <int key="objectID">3556</int>
+             <reference key="object" ref="243384014"/>
+             <object class="NSMutableArray" key="children">

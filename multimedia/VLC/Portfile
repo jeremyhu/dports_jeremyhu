@@ -22,13 +22,21 @@ platforms           darwin
 conflicts           VLC09
 
 homepage            http://www.videolan.org
-master_sites        http://download.videolan.org/pub/videolan/vlc/${version}/
-distname            vlc-${version}
-use_xz              yes
 
-checksums           md5     5ad114755670e4881a2b35354e2f79bc \
-                    sha1    40d0ed360dd3fa7dc3ff4fbc9c319553ebb22538 \
-                    rmd160  9d932e1be72b65cf47057191d9e84deeedea282c
+# The tarball is missing a bunch of files
+# https://trac.videolan.org/vlc/ticket/6739
+# https://trac.videolan.org/vlc/ticket/6743
+fetch.type      git
+git.url         git://git.videolan.org/vlc.git
+git.branch      2eab05e34ae0f580c25fde33c183bd9737c8aa3f
+
+#master_sites        http://download.videolan.org/pub/videolan/vlc/${version}/
+#distname            vlc-${version}
+#use_xz              yes
+#
+#checksums           md5     5ad114755670e4881a2b35354e2f79bc \
+#                    sha1    40d0ed360dd3fa7dc3ff4fbc9c319553ebb22538 \
+#                    rmd160  9d932e1be72b65cf47057191d9e84deeedea282c
 
 depends_lib     port:lame port:a52dec port:libogg port:flac port:BGHUDAppKit \
                 port:libdca port:libcddb port:libcdio port:libmad \
@@ -47,6 +55,7 @@ pre-fetch {
 }
 
 patchfiles \
+    package.mak.patch \
     patch-no-sparkle.diff
 
 post-patch {
@@ -56,6 +65,10 @@ post-patch {
         ${worksrcpath}/extras/package/macosx/vlc.xcodeproj/project.pbxproj 
     reinplace "/Growl.framework/d" \
         ${worksrcpath}/extras/package/macosx/package.mak
+
+    reinplace "s:LD_LIBRARY_PATH:DYLD_LIBRARY_PATH:g" \
+        ${worksrcpath}/Makefile.am 
+
     reinplace "s:librsvg-2/librsvg:librsvg:" \
         ${worksrcpath}/modules/text_renderer/svg.c
     reinplace "s:HOST_NAME_MAX:_POSIX_HOST_NAME_MAX:" \
@@ -65,6 +78,10 @@ post-patch {
 
     # To trick configure
     file mkdir "${worksrcpath}/contrib/lib"
+}
+
+pre-configure {
+    system "cd ${worksrcpath}/modules && find . -name Modules.am | sed 's|Modules.am||' | xargs ./genmf"
 }
 
 use_parallel_build no
@@ -271,9 +288,14 @@ if {[variant_isset x11]} {
 }
 
 platform macosx {
-    # The VLC.app target is not well-written, so we need to do it during destroot
-    destroot.target-append VLC.app
     post-destroot {
         file rename ${worksrcpath}/VLC.app ${destroot}${applications_dir}/VLC.app
+
+        # These are already in ${prefix}, so we don't need to bundle them as well
+        file delete -force ${destroot}${applications_dir}/VLC.app/Contents/Frameworks
+        file delete -force ${destroot}${applications_dir}/VLC.app/Contents/lib
+
+        # Fix linking
+        system "install_name_tool -change @loader_path/lib/libvlc.5.dylib ${prefix}/lib/libvlc.5.dylib ${destroot}${applications_dir}/VLC.app/Contents/MacOS/VLC"
     }
 }
