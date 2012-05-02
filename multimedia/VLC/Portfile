@@ -42,7 +42,6 @@ depends_lib     port:lame port:a52dec port:libogg port:flac port:BGHUDAppKit \
                 port:libdca port:libcddb port:libcdio port:libmad \
                 port:libvorbis port:libmatroska port:libid3tag \
                 port:ncurses port:lua port:libpng port:jpeg \
-                port:libdvdplay port:libdvdnav path:lib/libavcodec.dylib:ffmpeg \
                 port:gnutls port:taglib port:libxml2 port:faad2
 
 # TODO: port:live555
@@ -84,8 +83,6 @@ pre-configure {
     system "cd ${worksrcpath}/modules && find . -name Modules.am | sed 's|Modules.am||' | xargs ./genmf"
 }
 
-use_parallel_build no
-
 use_autoreconf yes
 autoreconf.args -fvi
 
@@ -110,6 +107,8 @@ configure.args-append \
     --disable-debug --disable-xvideo --disable-glx \
     --disable-xcb --disable-qt4 --disable-quicktime \
     --disable-skins2 --disable-notify --disable-telepathy --disable-twolame \
+    --disable-dvdnav --disable-dvdread \
+    --disable-avcodec --disable-avformat --disable-postproc --disable-swscale \
     --disable-speex --disable-theora --disable-x264 --disable-dvbpsi \
     --disable-vcdx  --disable-fontconfig --disable-freetype \
     --disable-dbus --disable-bonjour --disable-fribidi --disable-goom \
@@ -228,15 +227,18 @@ variant smb description {Enable Samba 3 support} {
     configure.ldflags-append    -L${prefix}/lib/samba3
 }
 
-variant no_dvd description {disable DVD and DeCSS support} {
-    depends_lib-delete      port:libdvdnav port:libdvdread
-    configure.args-append   --disable-dvdnav --disable-dvdread
+variant dvd description {Enable DVD and DeCSS support} {
+    depends_lib-append      port:libdvdnav port:libdvdread
+    configure.args-delete   --disable-dvdnav --disable-dvdread
+    configure.args-append   --enable-dvdnav --enable-dvdread
 }
 
-variant no_ffmpeg description {disable FFmpeg support} {
-    depends_lib-delete      path:lib/libavcodec.dylib:ffmpeg
-    configure.args-append   --disable-avcodec --disable-avformat \
+variant ffmpeg description {Enable FFmpeg support} {
+    depends_lib-append      path:lib/libavcodec.dylib:ffmpeg
+    configure.args-delete   --disable-avcodec --disable-avformat \
                             --disable-postproc --disable-swscale
+    configure.args-append   --enable-avcodec --enable-avformat \
+                            --enable-postproc --enable-swscale
 }
 
 variant x11 {
@@ -278,9 +280,11 @@ variant huge conflicts minimal \
 variant full requires huge qt4 smb \
     description {Enable all variants except x11 and no_*} {}
 
+default_variants +ffmpeg +dvd
+
 # Unless minimal variant is set compile with default Mac OS X configuration
 if {![variant_isset minimal]} {
-    default_variants +x264 +theora +twolame +mod +mpc +osd +portaudio +qtcapture +auhal
+    default_variants-append +x264 +theora +twolame +mod +mpc +osd +portaudio +qtcapture +auhal 
 }
 
 if {[variant_isset x11]} {
