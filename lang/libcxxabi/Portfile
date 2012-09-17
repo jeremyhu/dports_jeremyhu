@@ -8,53 +8,53 @@ categories              lang
 platforms               darwin
 license                 MIT UIUC
 maintainers             jeremyhu openmaintainer
-description             libc++abi is a new implementation of low level support for a standard C++ library
-long_description        ${description}
+description             libc++abi is a new implementation of low level support for a standard C++ library.
+long_description        ${description} \
+                        It installs to /usr/lib for older systems that don't have this support natively.
 
 homepage                http://libcxxabi.llvm.org/
 
 fetch.type              svn
-svn.revision            155927
+svn.revision            164017
 version                 ${svn.revision}
 worksrcdir              trunk
 svn.url                 http://llvm.org/svn/llvm-project/libcxxabi/trunk
 
-depends_lib \
-    port:libcxx-headers
-
-if {[string match "*gcc*" ${configure.compiler}]} {
-    configure.compiler clang
-    if {![file exists ${configure.cc}]} {
-        depends_build-append port:clang-3.0
-        depends_skip_archcheck-append clang-3.0
-
-        configure.compiler macports-clang-3.0
-    }
-}
-
 variant universal {}
-
-post-patch {
-    reinplace "s|/usr/lib|${prefix}/lib|g" \
-        ${worksrcpath}/lib/buildit
-}
-
 use_configure no
 
-build.dir ${worksrcpath}/lib
-build.cmd ./buildit
-build.env-append \
-    CC="${configure.cc} ${configure.cppflags}" \
-    CXX="${configure.cxx} ${configure.cppflags}" \
-    RC_XBS=1 \
-    RC_CFLAGS="[get_canonical_archflags]" \
-    TRIPLE="-apple-darwin${os.major}"
+if {${os.platform} == "darwin" && ${os.major} >= 11} {
+    fetch {}
+    build {}
+    destroot {}
+} else {
+    depends_build port:clang-3.1
+    depends_skip_archcheck-append clang-3.1
 
-destroot {
-    xinstall -m 755 -d ${destroot}${prefix}/lib
-    xinstall -m 755 ${worksrcpath}/lib/libc++abi.dylib ${destroot}${prefix}/lib
+    configure.compiler macports-clang-3.1
 
-    xinstall -m 755 -d ${destroot}${prefix}/include
-    xinstall -m 644 ${worksrcpath}/include/cxa_demangle.h ${destroot}${prefix}/include
-    xinstall -m 644 ${worksrcpath}/include/cxxabi.h ${destroot}${prefix}/include
+    build.dir ${worksrcpath}/lib
+    build.cmd ./buildit
+    build.env-append \
+        CC="${configure.cc} ${configure.cppflags}" \
+        CXX="${configure.cxx} ${configure.cppflags}" \
+        RC_XBS=1 \
+        RC_CFLAGS="[get_canonical_archflags]" \
+        TRIPLE="-apple-darwin${os.major}"
+
+    # We want to use the host's libc++abi everywhere because we want to ensure
+    # that only *ONE* copy of this library is in any process's address space.
+    # On newer OS versions (Lion+), this port does not install anything.  On
+    # Snow Leopard, this port provide this library in /usr for binary
+    # compatibility with Lion and later.
+
+    destroot.violate_mtree yes
+    destroot {
+        xinstall -m 755 -d ${destroot}/usr/lib
+        xinstall -m 755 ${worksrcpath}/lib/libc++abi.dylib ${destroot}/usr/lib
+
+        xinstall -m 755 -d ${destroot}/usr/include
+        xinstall -m 644 ${worksrcpath}/include/cxa_demangle.h ${destroot}/usr/include
+        xinstall -m 644 ${worksrcpath}/include/cxxabi.h ${destroot}/usr/include
+    }
 }
