@@ -23,15 +23,20 @@ svn.url                 http://llvm.org/svn/llvm-project/libcxxabi/trunk
 variant universal {}
 use_configure no
 
-if {${os.platform} == "darwin" && ${os.major} >= 11} {
+if {${os.major} >= 11} {
     fetch {}
     build {}
     destroot {}
+} elseif {${os.major} < 10} {
+    ui_error "${name} is not supported on Leopard or earlier."
+    error "unsupported platform"
 } else {
     depends_build port:clang-3.1
     depends_skip_archcheck-append clang-3.1
 
     configure.compiler macports-clang-3.1
+
+    supported_archs i386 x86_64
 
     build.dir ${worksrcpath}/lib
     build.cmd ./buildit
