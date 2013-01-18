@@ -7,7 +7,7 @@ PortGroup       muniversal 1.0
 
 name		webkit-gtk
 epoch           1
-version		1.10.2
+version		1.11.4
 description	Apple's WebKit HTML rendering library for GTK+
 long_description ${description}
 maintainers	jeremyhu devans
@@ -20,25 +20,27 @@ master_sites    http://webkitgtk.org/releases/
 use_xz          yes
 distname        webkitgtk-${version}
 
-checksums       sha1    733ca23157eb8dd072d57becf325799c00bde630 \
-                rmd160  91e6b8bcd4bb8234271dd6c6ebdba63dd1c0840e \
-                sha256  19234f8e4edfaefe91ed06471a2aa8c71d26dd55d33787eede1dcfc9a3a96d9c
+checksums           sha1    da1c5f98b72e50ed52a6d5d780c056295d6c6ae9 \
+                    rmd160  52eb173d841af9f8a0c6f07aa7726918524aa185 \
+                    sha256  7c04e4793b733efd17ed7e0014be321f9f54eec31ea94a0d9e8f7fbe04b47194
 
 depends_lib	\
+        port:enchant \
+        port:geoclue \
         port:gtk2 \
-        port:libsoup \
+        port:harfbuzz \
         port:icu \
         port:libxslt \
         port:libpng \
+        port:libsecret \
+        port:libsoup \
+        port:mesa \
         port:sqlite3 \
-        port:enchant \
-        port:xorg-libXt \
-        port:geoclue \
-        port:mesa
+        port:xorg-libXt
         
 depends_build	\
-        port:pkgconfig \
-        port:gtk-doc
+        port:gtk-doc \
+        port:pkgconfig
 
 # case-insensitive.patch: https://bugs.webkit.org/show_bug.cgi?id=65811
 # our-icu.patch: No upstream bug report, probably not wanted
@@ -49,6 +51,7 @@ depends_build	\
 #        bison-2.6.patch \
 
 patchfiles \
+        clang-assertions.patch \
         case-insensitive.patch \
         our-icu.patch \
         xrender-check.patch \
@@ -63,66 +66,18 @@ configure.args	\
         --with-gtk=2.0 \
         --disable-webkit2 \
         --disable-introspection \
-        --enable-link-prefetch \
-        --enable-image-resizer \
         --disable-video \
-        --enable-media-statistics \
         --enable-media-stream \
         --enable-svg \
         --enable-geolocation \
-        --enable-webgl \
-        --enable-page-visibility-api \
-        --enable-datagrid \
-        --enable-mathml \
-        --enable-web-timing \
-        --enable-mhtml \
-        --enable-microdata \
-        --enable-mutation-observers
+        --enable-webgl
 
 # https://bugs.webkit.org/show_bug.cgi?id=94488
 configure.universal_args-delete --disable-dependency-tracking
 
-# Not enabled because marked as expirimental
-#        --with-accelerated-compositing \
-#        --enable-animation-api \
-#        --enable-register-protocol-handler \
-
 # In 1.10.1:
 # https://bugs.webkit.org/show_bug.cgi?id=99732
-configure.args-append --disable-jit
-
-# In 1.8.2:
-# ./Source/WebCore/workers/WorkerContext.h:225: error: 'IDBFactoryBackendInterface' was not declared in this scope
-# https://bugs.webkit.org/show_bug.cgi?id=94495
-#        --enable-indexed-database \
-
-# In 1.8.2:
-# Source/WebCore/platform/gtk/ClipboardGtk.h:46: error: cannot allocate an object of abstract type 'WebCore::ClipboardGtk'
-# https://bugs.webkit.org/show_bug.cgi?id=94496
-#        --enable-data-transfer-items \
-
-# In 1.8.2:
-# AsyncFileSystemCallbacks.h is missing
-# https://bugs.webkit.org/show_bug.cgi?id=94413
-#        --enable-file-system \
-
-# In 1.8.2:
-# Source/WebKit/gtk/webkit/webkitwebview.cpp: In function 'void webkit_web_view_init(WebKitWebView*)':
-# Source/WebKit/gtk/webkit/webkitwebview.cpp:3422: error: cannot allocate an object of abstract type 'WebKit::ChromeClient'
-# ./Source/WebKit/gtk/WebCoreSupport/ChromeClientGtk.h:43: note:   because the following virtual functions are pure within 'WebKit::ChromeClient':
-# ./Source/WebCore/page/ChromeClient.h:232: note: 	virtual void WebCore::ChromeClient::enumerateChosenDirectory(WebCore::FileChooser*)
-# https://bugs.webkit.org/show_bug.cgi?id=94497
-#        --enable-directory-upload \
-
-# In 1.8.2:
-# ./DerivedSources/webkit/WebKitDOMHTMLMediaElement.h:101: error: 'WebKitDOMUint8Array' has not been declared
-#        --enable-media-source \
-
-# In 1.8.2:
-# ./DerivedSources/webkit/WebKitDOMDOMWindow.h:843: error: expected constructor, destructor, or type conversion before '*' token
-# https://bugs.webkit.org/show_bug.cgi?id=94498
-# https://bugs.webkit.org/show_bug.cgi?id=66477
-#        --enable-notifications \
+# configure.args-append --disable-jit
 
 # In 1.10.1:
 # Source/WebCore/platform/audio/gstreamer/FFTFrameGStreamer.cpp: In constructor 'WebCore::FFTFrame::FFTFrame(unsigned int)':
@@ -137,19 +92,6 @@ configure.args-append --disable-jit
 # Source/WebCore/platform/audio/gstreamer/FFTFrameGStreamer.cpp:52: error: 'TRUE' was not declared in this scope
 #        --enable-web-audio \
 
-# In 1.8.2:
-# Source/WebCore/html/ColorInputType.cpp: In member function 'virtual void WebCore::ColorInputType::createShadowSubtree()':
-# Source/WebCore/html/ColorInputType.cpp:119: error: 'class WebCore::HTMLInputElement' has no member named 'shadowRoot'
-# Source/WebCore/html/ColorInputType.cpp: In member function 'WebCore::HTMLElement* WebCore::ColorInputType::shadowColorSwatch() const':
-# Source/WebCore/html/ColorInputType.cpp:188: error: 'class WebCore::HTMLInputElement' has no member named 'shadowRoot'
-# https://bugs.webkit.org/show_bug.cgi?id=94499
-#        --enable-input-color \
-
-pre-configure {
-    # https://bugs.webkit.org/show_bug.cgi?id=106170
-    configure.cppflags-append -I${prefix}/include/pango-1.0
-}
-
 # We don't want to use the headers from the installed WebKit
 configure.cppflags-delete -I${prefix}/include
 
@@ -161,17 +103,6 @@ autoreconf.args -fvi
 if {[vercmp ${xcodeversion} 3.0] >= 0} {
     compiler.blacklist-append gcc-4.0
 }
-
-# BUILD FIX TODO: clang C++
-#
-# 1.10.1:
-# HTMLPropertiesCollection.h:52:42: error: 'namedItem' marked 'override' but does not override any member functions
-# https://bugs.webkit.org/show_bug.cgi?id=100618
-compiler.blacklist-append clang
-
-#if {[string match "*clang*" ${configure.compiler}]} {
-#    configure.cxxflags-append -std=c++11 -Wno-error=c++11-narrowing
-#}
 
 post-patch {
     # https://bugs.webkit.org/show_bug.cgi?id=88407
@@ -212,19 +143,11 @@ variant quartz {
     patchfiles-append quartz-duplicate-symbols.patch
 }
 
-variant pango description {Use the pango font backend instead of freetype} {
-    configure.args-append --with-font-backend=pango
-}
-
 variant video description {Enable HTML5 video support using gstreamer} {
-	depends_lib-append	port:gst-plugins-base
-	configure.args-delete	--disable-video
-	configure.args-append   --enable-video-track
-}
-
-variant gnome_keyring description {Enable support for gnomekeyring} {
-        depends_lib-append      port:libgnome-keyring
-        configure.args-append   --enable-gnomekeyring
+	# Supports either 0.10 or 1.0 gstreamer API
+        depends_lib-append      port:gst-plugins-base
+        configure.args-delete   --disable-video
+        configure.args-append   --enable-video
 }
 
 default_variants +video
