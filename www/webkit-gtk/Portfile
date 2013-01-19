@@ -76,10 +76,6 @@ configure.args	\
 configure.universal_args-delete --disable-dependency-tracking
 
 # In 1.10.1:
-# https://bugs.webkit.org/show_bug.cgi?id=99732
-# configure.args-append --disable-jit
-
-# In 1.10.1:
 # Source/WebCore/platform/audio/gstreamer/FFTFrameGStreamer.cpp: In constructor 'WebCore::FFTFrame::FFTFrame(unsigned int)':
 # Source/WebCore/platform/audio/gstreamer/FFTFrameGStreamer.cpp:48: error: 'm_complexData' was not declared in this scope
 # Source/WebCore/platform/audio/gstreamer/FFTFrameGStreamer.cpp:48: error: 'GstFFTF32Complex' was not declared in this scope
