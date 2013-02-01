@@ -47,7 +47,9 @@ depends_build	\
 # xrender-check.patch: https://bugs.webkit.org/show_bug.cgi?id=84095
 # bison-2.6.patch: No upstream bug (?)
 # ruby-1.8.patch: http://trac.macports.org/ticket/37740
+# ListableHandler.patch: https://trac.macports.org/ticket/37828
 # optflags.patch: https://trac.macports.org/ticket/37839
+# execinfo.patch: https://trac.macports.org/ticket/37882
 # ppc.patch: https://bugs.webkit.org/show_bug.cgi?id=96005
 # tiger.patch: No upstream bug, http://trac.macports.org/ticket/35923
 
@@ -57,8 +59,10 @@ patchfiles \
         clang-assertions.patch \
         case-insensitive.patch \
         our-icu.patch \
+        execinfo.patch \
         xrender-check.patch \
         ruby-1.8.patch \
+        ListableHandler.patch \
         optflags.patch \
         ppc.patch \
         tiger.patch
@@ -166,6 +170,13 @@ platform darwin {
 
         # https://trac.macports.org/ticket/37418
         configure.cppflags-append -D__MAC_OS_X_VERSION_MAX_ALLOWED=1050
+    }
+
+    if {[string match "*10.4*" ${configure.sdkroot}] || 
+        (${os.major} == 8 && ${configure.sdkroot} == "")} {
+
+        # https://trac.macports.org/ticket/37828
+        configure.cppflags-append -D__MAC_OS_X_VERSION_MAX_ALLOWED=1040
     }
 
     if {$macosx_deployment_target == "10.4" ||
