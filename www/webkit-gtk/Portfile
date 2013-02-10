@@ -52,8 +52,7 @@ depends_build	\
 # execinfo.patch: https://trac.macports.org/ticket/37882
 # ppc.patch: https://bugs.webkit.org/show_bug.cgi?id=96005
 # tiger.patch: No upstream bug, http://trac.macports.org/ticket/35923
-
-#        bison-2.6.patch \
+# missing-include.patch: https://bugs.webkit.org/show_bug.cgi?id=109386
 
 patchfiles \
         clang-assertions.patch \
@@ -63,6 +62,7 @@ patchfiles \
         xrender-check.patch \
         ruby-1.8.patch \
         ListableHandler.patch \
+        missing-include.patch \
         optflags.patch \
         ppc.patch \
         tiger.patch
@@ -100,6 +100,9 @@ configure.universal_args-delete --disable-dependency-tracking
 
 # We don't want to use the headers from the installed WebKit
 configure.cppflags-delete -I${prefix}/include
+
+# google-test suite build fix
+configure.cppflags-append -DGTEST_USE_OWN_TR1_TUPLE=1
 
 autoreconf.env-append ACLOCAL="aclocal -I Source/autotools"
 use_autoreconf  yes
