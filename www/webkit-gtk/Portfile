@@ -7,7 +7,7 @@ PortGroup       muniversal 1.0
 
 name		webkit-gtk
 epoch           1
-version		1.11.4
+version		1.11.91
 description	Apple's WebKit HTML rendering library for GTK+
 long_description ${description}
 maintainers	jeremyhu devans
@@ -20,9 +20,9 @@ master_sites    http://webkitgtk.org/releases/
 use_xz          yes
 distname        webkitgtk-${version}
 
-checksums           sha1    da1c5f98b72e50ed52a6d5d780c056295d6c6ae9 \
-                    rmd160  52eb173d841af9f8a0c6f07aa7726918524aa185 \
-                    sha256  7c04e4793b733efd17ed7e0014be321f9f54eec31ea94a0d9e8f7fbe04b47194
+checksums           sha1    1e04b1ba1f8096fa528e93c5fab5057e7c2f6f1d \
+                    rmd160  dd09cecd56b9bf053133db8db1e986e78bdd9849 \
+                    sha256  bf5419724e555bddcd2b82ebac9af47cb08e1ce0b7eb37baf30084fda74b5bee
 
 depends_lib	\
         path:lib/pkgconfig/glib-2.0.pc:glib2 \
@@ -45,26 +45,19 @@ depends_build	\
 
 # case-insensitive.patch: https://bugs.webkit.org/show_bug.cgi?id=65811
 # our-icu.patch: No upstream bug report, probably not wanted
-# xrender-check.patch: https://bugs.webkit.org/show_bug.cgi?id=84095
-# bison-2.6.patch: No upstream bug (?)
 # ruby-1.8.patch: http://trac.macports.org/ticket/37740
 # ListableHandler.patch: https://trac.macports.org/ticket/37828
-# optflags.patch: https://trac.macports.org/ticket/37839
 # execinfo.patch: https://trac.macports.org/ticket/37882
 # ppc.patch: https://bugs.webkit.org/show_bug.cgi?id=96005
 # tiger.patch: No upstream bug, http://trac.macports.org/ticket/35923
-# missing-include.patch: https://bugs.webkit.org/show_bug.cgi?id=109386
 
 patchfiles \
         clang-assertions.patch \
         case-insensitive.patch \
         our-icu.patch \
         execinfo.patch \
-        xrender-check.patch \
         ruby-1.8.patch \
         ListableHandler.patch \
-        missing-include.patch \
-        optflags.patch \
         ppc.patch \
         tiger.patch
 
@@ -78,7 +71,6 @@ configure.args	\
         --disable-webkit2 \
         --disable-introspection \
         --disable-video \
-        --enable-media-stream \
         --enable-svg \
         --enable-geolocation \
         --enable-webgl
@@ -99,11 +91,17 @@ configure.universal_args-delete --disable-dependency-tracking
 # Source/WebCore/platform/audio/gstreamer/FFTFrameGStreamer.cpp:52: error: 'TRUE' was not declared in this scope
 #        --enable-web-audio \
 
+# Source/WebCore/platform/mediastream/MediaStreamSource.h:37:10: fatal error: 'AudioDestinationConsumer.h' file not
+#        --enable-media-stream \
+
 # We don't want to use the headers from the installed WebKit
 configure.cppflags-delete -I${prefix}/include
 
 # google-test suite build fix
 configure.cppflags-append -DGTEST_USE_OWN_TR1_TUPLE=1
+
+# https://bugs.webkit.org/show_bug.cgi?id=111817
+configure.cppflags-append -DOS_MACOSX
 
 autoreconf.env-append ACLOCAL="aclocal -I Source/autotools"
 use_autoreconf  yes
@@ -158,8 +156,7 @@ variant quartz {
 }
 
 variant video description {Enable HTML5 video support using gstreamer} {
-	# Supports either 0.10 or 1.0 gstreamer API
-        depends_lib-append      port:gstreamer010-gst-plugins-base
+        depends_lib-append      port:gstreamer1-gst-plugins-base
         configure.args-delete   --disable-video
         configure.args-append   --enable-video
 }
