@@ -25,6 +25,7 @@ checksums           sha1    da1c5f98b72e50ed52a6d5d780c056295d6c6ae9 \
                     sha256  7c04e4793b733efd17ed7e0014be321f9f54eec31ea94a0d9e8f7fbe04b47194
 
 depends_lib	\
+        path:lib/pkgconfig/glib-2.0.pc:glib2 \
         port:enchant \
         port:geoclue \
         port:gtk2 \
@@ -113,6 +114,10 @@ if {[vercmp ${xcodeversion} 3.0] >= 0} {
     compiler.blacklist-append gcc-4.0
 }
 
+if {[string match *clang* ${configure.compiler}]} {
+    configure.cxxflags-append -Wno-c++11-extensions
+}
+
 post-patch {
     # https://bugs.webkit.org/show_bug.cgi?id=88407
     reinplace "s:echo -n:/bin/echo -n:g" \
@@ -154,7 +159,7 @@ variant quartz {
 
 variant video description {Enable HTML5 video support using gstreamer} {
 	# Supports either 0.10 or 1.0 gstreamer API
-        depends_lib-append      port:gst-plugins-base
+        depends_lib-append      port:gstreamer010-gst-plugins-base
         configure.args-delete   --disable-video
         configure.args-append   --enable-video
 }
