@@ -143,7 +143,7 @@ default build.dir           {${workpath}/build}
 configure.ldflags-append    -Wl,-rpath,@loader_path
 
 configure.args-append \
-    -DBUILD_SHARED_LIBS=ON \
+    -DLLVM_BUILD_LLVM_DYLIB=ON \
     -DCMAKE_INSTALL_PREFIX="${sub_prefix}" \
     -DLLVM_ENABLE_ASSERTIONS=OFF \
     -DLLVM_ENABLE_RTTI=ON \
