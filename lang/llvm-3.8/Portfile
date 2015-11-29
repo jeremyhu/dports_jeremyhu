@@ -162,9 +162,13 @@ if {${subport} eq "llvm-${llvm_version}"} {
 
     configure.args-append \
         -DCLANG_INCLUDE_TESTS=OFF \
-        -DCLANG_ENABLE_STATIC_ANALYZER=OFF \
+        -DCLANG_ENABLE_STATIC_ANALYZER=OFF
+
+    # https://llvm.org/bugs/show_bug.cgi?id=25665
+    configure.args-append \
         -DLLVM_BUILD_RUNTIME=ON \
-        -DLIBCXX_INSTALL_LIBRARY=OFF
+        -DLIBCXX_INSTALL_LIBRARY=OFF \
+        -DLIBCXX_ENABLE_SHARED=OFF
 }
 
 # llvm-3.5 and later requires a C++11 runtime
