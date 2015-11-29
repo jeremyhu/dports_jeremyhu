@@ -316,8 +316,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
     variant ocaml description {Enable generation of OCaml binding} {
         depends_lib-append   port:ocaml
 
-        configure.args-delete --enable-bindings=none
-        configure.args-append --enable-bindings=ocaml
+        configure.args-append -DLLVM_BINDINGS_LIST=ocaml
 
         destroot.args-append  OVERRIDE_libdir=${sub_prefix}/lib
     }
