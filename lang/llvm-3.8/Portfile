@@ -142,6 +142,9 @@ default build.dir           {${workpath}/build}
 # https://llvm.org/bugs/show_bug.cgi?id=25664
 configure.ldflags-append    -Wl,-rpath,@loader_path
 
+# https://llvm.org/bugs/show_bug.cgi?id=25674
+configure.cxxflags-append   -std=c++11
+
 configure.args-append \
     -DLLVM_BUILD_LLVM_DYLIB=ON \
     -DCMAKE_INSTALL_PREFIX="${sub_prefix}" \
