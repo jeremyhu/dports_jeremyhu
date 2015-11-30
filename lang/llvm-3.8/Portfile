@@ -247,7 +247,7 @@ platform darwin {
     if {${os.major} < 11} {
         # Proxy for eliminating the dependency on native TLS
         # http://trac.macports.org/ticket/46887
-        configure.args-append --disable-backtraces
+        configure.args-append -DLLVM_ENABLE_BACKTRACES=OFF
     }
 }
 
