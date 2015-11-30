@@ -154,6 +154,7 @@ configure.args-append \
     -DLLVM_INCLUDE_TESTS=OFF \
     -DLLVM_INCLUDE_EXAMPLES=OFF \
     -DLLVM_ENABLE_FFI=ON \
+    -DLLVM_BINDINGS_LIST=none \
     -DFFI_INCLUDE_DIR=${prefix}/include \
     -DFFI_LIBRARY_DIR=${prefix}/lib
 
@@ -332,6 +333,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
     variant ocaml description {Enable generation of OCaml binding} {
         depends_lib-append   port:ocaml
 
+        configure.args-delete -DLLVM_BINDINGS_LIST=none
         configure.args-append -DLLVM_BINDINGS_LIST=ocaml
 
         destroot.args-append  OVERRIDE_libdir=${sub_prefix}/lib
